@@ -358,6 +358,14 @@ export async function customFetch<T = unknown>(
     }
   }
 
+  // Taskify specific: Read taskify_token from localStorage and inject
+  if (typeof window !== "undefined" && !headers.has("authorization")) {
+    const taskifyToken = window.localStorage.getItem("taskify_token");
+    if (taskifyToken) {
+      headers.set("authorization", `Bearer ${taskifyToken}`);
+    }
+  }
+
   const requestInfo = { method, url: resolveUrl(input) };
 
   const response = await fetch(input, { ...init, method, headers });

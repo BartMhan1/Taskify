@@ -1,15 +1,22 @@
 openapi: 3.1.0
 info:
-  # Do not change the title, if the title changes, the import paths will be broken
   title: Api
   version: 0.1.0
-  description: API specification
+  description: Taskify API specification
 servers:
   - url: /api
     description: Base API path
 tags:
   - name: health
     description: Health operations
+  - name: auth
+    description: Authentication operations
+  - name: tasks
+    description: Task management
+  - name: dashboard
+    description: Dashboard data
+  - name: statistics
+    description: Statistics and analytics
 paths:
   /healthz:
     get:
@@ -24,6 +31,341 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+
+  /auth/register:
+    post:
+      operationId: register
+      tags: [auth]
+      summary: Register a new user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RegisterInput"
+      responses:
+        "201":
+          description: User registered
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthResponse"
+        "400":
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /auth/login:
+    post:
+      operationId: login
+      tags: [auth]
+      summary: Login with email and password
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoginInput"
+      responses:
+        "200":
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthResponse"
+        "401":
+          description: Invalid credentials
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /auth/logout:
+    post:
+      operationId: logout
+      tags: [auth]
+      summary: Logout current user
+      responses:
+        "200":
+          description: Logged out
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MessageResponse"
+
+  /auth/me:
+    get:
+      operationId: getMe
+      tags: [auth]
+      summary: Get current user profile
+      responses:
+        "200":
+          description: Current user
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        "401":
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /auth/profile:
+    put:
+      operationId: updateProfile
+      tags: [auth]
+      summary: Update user profile
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ProfileUpdate"
+      responses:
+        "200":
+          description: Profile updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+
+  /tasks:
+    get:
+      operationId: getTasks
+      tags: [tasks]
+      summary: Get all tasks for the current user
+      parameters:
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [pending, completed, all]
+        - name: priority
+          in: query
+          schema:
+            type: string
+            enum: [low, medium, high]
+        - name: search
+          in: query
+          schema:
+            type: string
+        - name: sortBy
+          in: query
+          schema:
+            type: string
+            enum: [dueDate, priority, title, createdAt]
+        - name: page
+          in: query
+          schema:
+            type: integer
+        - name: limit
+          in: query
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: List of tasks
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TaskListResponse"
+
+    post:
+      operationId: createTask
+      tags: [tasks]
+      summary: Create a new task
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TaskInput"
+      responses:
+        "201":
+          description: Task created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Task"
+
+  /tasks/{id}:
+    get:
+      operationId: getTask
+      tags: [tasks]
+      summary: Get a single task
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Task
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Task"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+    put:
+      operationId: updateTask
+      tags: [tasks]
+      summary: Update a task
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TaskUpdate"
+      responses:
+        "200":
+          description: Task updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Task"
+
+    delete:
+      operationId: deleteTask
+      tags: [tasks]
+      summary: Delete a task
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Task deleted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MessageResponse"
+
+  /tasks/{id}/complete:
+    patch:
+      operationId: completeTask
+      tags: [tasks]
+      summary: Mark a task as completed
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Task completed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Task"
+
+  /tasks/today:
+    get:
+      operationId: getTodayTasks
+      tags: [tasks]
+      summary: Get tasks due today
+      responses:
+        "200":
+          description: Today's tasks
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TodayTasksResponse"
+
+  /tasks/calendar:
+    get:
+      operationId: getCalendarTasks
+      tags: [tasks]
+      summary: Get tasks grouped by date for calendar view
+      parameters:
+        - name: year
+          in: query
+          required: true
+          schema:
+            type: integer
+        - name: month
+          in: query
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Calendar tasks
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CalendarResponse"
+
+  /tasks/completed:
+    get:
+      operationId: getCompletedTasks
+      tags: [tasks]
+      summary: Get completed tasks with progress data
+      parameters:
+        - name: period
+          in: query
+          schema:
+            type: string
+            enum: [today, week, month, all]
+      responses:
+        "200":
+          description: Completed tasks
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CompletedTasksResponse"
+
+  /dashboard:
+    get:
+      operationId: getDashboard
+      tags: [dashboard]
+      summary: Get dashboard summary data
+      responses:
+        "200":
+          description: Dashboard data
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DashboardResponse"
+
+  /statistics:
+    get:
+      operationId: getStatistics
+      tags: [statistics]
+      summary: Get statistics and analytics
+      parameters:
+        - name: period
+          in: query
+          schema:
+            type: string
+            enum: [week, month, year]
+      responses:
+        "200":
+          description: Statistics data
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/StatisticsResponse"
+
 components:
   schemas:
     HealthStatus:
@@ -34,3 +376,433 @@ components:
       required:
         - status
 
+    ErrorResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        message:
+          type: string
+      required: [success, message]
+
+    MessageResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        message:
+          type: string
+      required: [success, message]
+
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        email:
+          type: string
+        jobTitle:
+          type: ["string", "null"]
+        timezone:
+          type: ["string", "null"]
+        phone:
+          type: ["string", "null"]
+        language:
+          type: ["string", "null"]
+        bio:
+          type: ["string", "null"]
+        avatarUrl:
+          type: ["string", "null"]
+        createdAt:
+          type: string
+      required: [id, name, email, createdAt]
+
+    RegisterInput:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+        email:
+          type: string
+        password:
+          type: string
+          minLength: 8
+      required: [name, email, password]
+
+    LoginInput:
+      type: object
+      properties:
+        email:
+          type: string
+        password:
+          type: string
+      required: [email, password]
+
+    ProfileUpdate:
+      type: object
+      properties:
+        name:
+          type: string
+        email:
+          type: string
+        jobTitle:
+          type: string
+        timezone:
+          type: string
+        phone:
+          type: string
+        language:
+          type: string
+        bio:
+          type: string
+
+    AuthResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        token:
+          type: string
+        user:
+          $ref: "#/components/schemas/User"
+      required: [success, token, user]
+
+    Task:
+      type: object
+      properties:
+        id:
+          type: integer
+        userId:
+          type: integer
+        title:
+          type: string
+        description:
+          type: ["string", "null"]
+        dueDate:
+          type: ["string", "null"]
+        priority:
+          type: string
+          enum: [low, medium, high]
+        status:
+          type: string
+          enum: [pending, completed]
+        category:
+          type: ["string", "null"]
+        completedAt:
+          type: ["string", "null"]
+        createdAt:
+          type: string
+        updatedAt:
+          type: string
+      required: [id, userId, title, priority, status, createdAt, updatedAt]
+
+    TaskInput:
+      type: object
+      properties:
+        title:
+          type: string
+          minLength: 1
+        description:
+          type: string
+        dueDate:
+          type: string
+        priority:
+          type: string
+          enum: [low, medium, high]
+        status:
+          type: string
+          enum: [pending, completed]
+        category:
+          type: string
+      required: [title, priority, status]
+
+    TaskUpdate:
+      type: object
+      properties:
+        title:
+          type: string
+          minLength: 1
+        description:
+          type: string
+        dueDate:
+          type: string
+        priority:
+          type: string
+          enum: [low, medium, high]
+        status:
+          type: string
+          enum: [pending, completed]
+        category:
+          type: string
+
+    TaskListResponse:
+      type: object
+      properties:
+        tasks:
+          type: array
+          items:
+            $ref: "#/components/schemas/Task"
+        total:
+          type: integer
+        page:
+          type: integer
+        totalPages:
+          type: integer
+      required: [tasks, total, page, totalPages]
+
+    TodayTasksResponse:
+      type: object
+      properties:
+        tasks:
+          type: array
+          items:
+            $ref: "#/components/schemas/Task"
+        stats:
+          type: object
+          properties:
+            totalToday:
+              type: integer
+            dueToday:
+              type: integer
+            highPriority:
+              type: integer
+            completed:
+              type: integer
+          required: [totalToday, dueToday, highPriority, completed]
+        dueSoon:
+          type: array
+          items:
+            $ref: "#/components/schemas/Task"
+      required: [tasks, stats, dueSoon]
+
+    CalendarDay:
+      type: object
+      properties:
+        date:
+          type: string
+        tasks:
+          type: array
+          items:
+            $ref: "#/components/schemas/Task"
+      required: [date, tasks]
+
+    CalendarResponse:
+      type: object
+      properties:
+        days:
+          type: array
+          items:
+            $ref: "#/components/schemas/CalendarDay"
+        todayTasks:
+          type: array
+          items:
+            $ref: "#/components/schemas/Task"
+        statusSummary:
+          type: object
+          properties:
+            total:
+              type: integer
+            completed:
+              type: integer
+            pending:
+              type: integer
+            overdue:
+              type: integer
+          required: [total, completed, pending, overdue]
+        quote:
+          type: string
+      required: [days, todayTasks, statusSummary, quote]
+
+    CompletedTasksResponse:
+      type: object
+      properties:
+        tasks:
+          type: array
+          items:
+            $ref: "#/components/schemas/Task"
+        stats:
+          type: object
+          properties:
+            totalCompleted:
+              type: integer
+            completedToday:
+              type: integer
+            completionRate:
+              type: integer
+            dayStreak:
+              type: integer
+          required: [totalCompleted, completedToday, completionRate, dayStreak]
+        progress:
+          type: object
+          properties:
+            completed:
+              type: integer
+            pending:
+              type: integer
+            total:
+              type: integer
+          required: [completed, pending, total]
+        streakDays:
+          type: array
+          items:
+            type: object
+            properties:
+              day:
+                type: string
+              completed:
+                type: boolean
+            required: [day, completed]
+        achievements:
+          type: array
+          items:
+            $ref: "#/components/schemas/Achievement"
+      required: [tasks, stats, progress, streakDays, achievements]
+
+    Achievement:
+      type: object
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        description:
+          type: string
+        badge:
+          type: string
+        unlockedAt:
+          type: ["string", "null"]
+      required: [id, title, description, badge]
+
+    DashboardResponse:
+      type: object
+      properties:
+        stats:
+          type: object
+          properties:
+            totalTasks:
+              type: integer
+            pending:
+              type: integer
+            completed:
+              type: integer
+            todayTasks:
+              type: integer
+          required: [totalTasks, pending, completed, todayTasks]
+        recentTasks:
+          type: array
+          items:
+            $ref: "#/components/schemas/Task"
+        upcomingDeadlines:
+          type: array
+          items:
+            $ref: "#/components/schemas/Task"
+        taskSummary:
+          type: object
+          properties:
+            pending:
+              type: integer
+            pendingPercent:
+              type: number
+            completed:
+              type: integer
+            completedPercent:
+              type: number
+            overdue:
+              type: integer
+            overduePercent:
+              type: number
+            total:
+              type: integer
+          required: [pending, pendingPercent, completed, completedPercent, overdue, overduePercent, total]
+      required: [stats, recentTasks, upcomingDeadlines, taskSummary]
+
+    DailyDataPoint:
+      type: object
+      properties:
+        date:
+          type: string
+        completed:
+          type: integer
+        pending:
+          type: integer
+        overdue:
+          type: integer
+      required: [date, completed, pending, overdue]
+
+    StatisticsResponse:
+      type: object
+      properties:
+        stats:
+          type: object
+          properties:
+            totalTasks:
+              type: integer
+            totalTasksChange:
+              type: number
+            pendingTasks:
+              type: integer
+            pendingTasksChange:
+              type: number
+            completedTasks:
+              type: integer
+            completedTasksChange:
+              type: number
+            todayTasks:
+              type: integer
+            todayTasksChange:
+              type: number
+            completionRate:
+              type: number
+            completionRateChange:
+              type: number
+          required: [totalTasks, totalTasksChange, pendingTasks, pendingTasksChange, completedTasks, completedTasksChange, todayTasks, todayTasksChange, completionRate, completionRateChange]
+        dailyData:
+          type: array
+          items:
+            $ref: "#/components/schemas/DailyDataPoint"
+        priorityBreakdown:
+          type: object
+          properties:
+            high:
+              type: integer
+            medium:
+              type: integer
+            low:
+              type: integer
+            total:
+              type: integer
+          required: [high, medium, low, total]
+        statusBreakdown:
+          type: object
+          properties:
+            completed:
+              type: integer
+            pending:
+              type: integer
+            total:
+              type: integer
+          required: [completed, pending, total]
+        topProductivityDays:
+          type: array
+          items:
+            type: object
+            properties:
+              date:
+                type: string
+              count:
+                type: integer
+            required: [date, count]
+        productivityTrend:
+          type: array
+          items:
+            type: object
+            properties:
+              date:
+                type: string
+              rate:
+                type: number
+            required: [date, rate]
+      required: [stats, dailyData, priorityBreakdown, statusBreakdown, topProductivityDays, productivityTrend]
