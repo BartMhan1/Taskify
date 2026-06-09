@@ -1,36 +1,60 @@
-# [Project name]
+# Taskify
 
-_Replace the heading above with the project's name, and this line with one sentence describing what this app does for users._
+A full-stack task management web app — organize, prioritize, and get things done.
 
 ## Run & Operate
 
-- `pnpm --filter @workspace/api-server run dev` — run the API server (port 5000)
+- `pnpm --filter @workspace/api-server run dev` — run the API server (port 5000/8080)
+- `pnpm --filter @workspace/taskify run dev` — run the frontend (port 22180)
 - `pnpm run typecheck` — full typecheck across all packages
 - `pnpm run build` — typecheck + build all packages
 - `pnpm --filter @workspace/api-spec run codegen` — regenerate API hooks and Zod schemas from the OpenAPI spec
 - `pnpm --filter @workspace/db run push` — push DB schema changes (dev only)
-- Required env: `DATABASE_URL` — Postgres connection string
+- Required env: `DATABASE_URL` — Postgres connection string, `SESSION_SECRET` — JWT signing secret
 
 ## Stack
 
 - pnpm workspaces, Node.js 24, TypeScript 5.9
+- Frontend: React + Vite, Tailwind CSS, shadcn/ui, Recharts, wouter routing
 - API: Express 5
 - DB: PostgreSQL + Drizzle ORM
 - Validation: Zod (`zod/v4`), `drizzle-zod`
 - API codegen: Orval (from OpenAPI spec)
 - Build: esbuild (CJS bundle)
+- Auth: JWT stored in localStorage as `taskify_token`
 
 ## Where things live
 
-_Populate as you build — short repo map plus pointers to the source-of-truth file for DB schema, API contracts, theme files, etc._
+- `artifacts/taskify/` — React+Vite frontend (previewPath: `/`)
+- `artifacts/api-server/` — Express API server (previewPath: `/api`)
+- `lib/db/src/schema/` — Drizzle ORM schema (users.ts, tasks.ts)
+- `lib/api-spec/openapi.yaml` — OpenAPI 3.0 spec (source of truth for API contract)
+- `lib/api-client-react/` — Generated React Query hooks + custom-fetch with localStorage token injection
 
 ## Architecture decisions
 
-_Populate as you build — non-obvious choices a reader couldn't infer from the code (3-5 bullets)._
+- JWT in localStorage (not cookies) — injected into every fetch via `custom-fetch.ts`
+- Contract-first API: OpenAPI spec → Orval codegen → typed React Query hooks
+- All settings tabs are client-side state within a single `/settings` route
+- Drizzle push for dev migrations, manual SQL for production
 
 ## Product
 
-_Describe the high-level user-facing capabilities of this app once they exist._
+- **Landing page** — marketing page with device mockup, features, CTA, footer
+- **Auth** — login/register with SVG illustrations, JWT auth
+- **Dashboard** — stats cards, recent tasks, donut chart, upcoming deadlines
+- **My Tasks** — full CRUD with filters, search, sort, pagination, add-task sidebar panel
+- **Today** — daily focus with schedule timeline, "due soon" section
+- **Completed** — streaks, progress donut chart, achievements/badges
+- **Calendar** — monthly grid with task pills, today's tasks panel
+- **Statistics** — area charts, pie charts, productivity insights (Recharts)
+- **Settings** — 9 tabs: Profile, Account, Notifications, Appearance, Preferences, Privacy, Data/Export, Integrations, About
+
+## Demo account
+
+- Email: `aarav.sharma@example.com`
+- Password: `Password123`
+- 15 pre-seeded tasks across Work, Personal, Learning categories
 
 ## User preferences
 
@@ -38,7 +62,9 @@ _Populate as you build — explicit user instructions worth remembering across s
 
 ## Gotchas
 
-_Populate as you build — sharp edges, "always run X before Y" rules._
+- When adding new routes, update both `lib/api-spec/openapi.yaml` and run codegen
+- Custom-fetch auto-injects `taskify_token` from localStorage — no manual auth header needed in frontend code
+- The `zod/v4` import path (not `zod`) is used throughout per workspace catalog
 
 ## Pointers
 
