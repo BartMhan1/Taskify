@@ -63,6 +63,7 @@ function Router() {
       <Route path="/completed"><ProtectedRoute component={Completed} /></Route>
       <Route path="/calendar"><ProtectedRoute component={Calendar} /></Route>
       <Route path="/statistics"><ProtectedRoute component={Statistics} /></Route>
+      <Route path="/settings"><Redirect to="/settings/profile" /></Route>
       <Route path="/settings/:tab*"><ProtectedRoute component={Settings} /></Route>
       
       <Route component={NotFound} />
