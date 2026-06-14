@@ -3,10 +3,10 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
+import { ThemeProvider } from "@/components/theme-provider";
 import NotFound from "@/pages/not-found";
 
 // Pages
-import Landing from "@/pages/landing";
 import Login from "@/pages/login";
 import Register from "@/pages/register";
 import Dashboard from "@/pages/dashboard";
@@ -53,7 +53,7 @@ function PublicRoute({ component: Component, ...rest }: { component: any, [key: 
 function Router() {
   return (
     <Switch>
-      <Route path="/" component={Landing} />
+      <Route path="/"><Redirect to="/tasks" /></Route>
       <Route path="/login"><PublicRoute component={Login} /></Route>
       <Route path="/register"><PublicRoute component={Register} /></Route>
       
@@ -74,14 +74,16 @@ function Router() {
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
-          <AuthProvider>
-            <Router />
-          </AuthProvider>
-        </WouterRouter>
-        <Toaster />
-      </TooltipProvider>
+      <ThemeProvider defaultTheme="light" storageKey="vite-ui-theme">
+        <TooltipProvider>
+          <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
+            <AuthProvider>
+              <Router />
+            </AuthProvider>
+          </WouterRouter>
+          <Toaster />
+        </TooltipProvider>
+      </ThemeProvider>
     </QueryClientProvider>
   );
 }

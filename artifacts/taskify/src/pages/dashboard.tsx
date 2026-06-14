@@ -1,4 +1,5 @@
 import { AppLayout } from "@/components/layout/AppLayout";
+import { Link } from "wouter";
 import { useAuth } from "@/contexts/AuthContext";
 import { useGetDashboard, getGetDashboardQueryKey } from "@workspace/api-client-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -31,7 +32,9 @@ export default function Dashboard() {
     >
       <div className="flex items-center justify-between mb-6">
          <div></div>
-         <Button className="bg-primary text-primary-foreground hover:bg-primary/90">+ Add New Task</Button>
+         <Link href="/tasks">
+           <Button className="bg-primary text-primary-foreground hover:bg-primary/90">+ Add New Task</Button>
+         </Link>
       </div>
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 mb-8">
