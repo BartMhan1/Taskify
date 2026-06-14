@@ -135,17 +135,17 @@ export default function Tasks() {
               <div className="divide-y">
                 {filteredTasks.map(task => (
                   <div key={task.id} className="flex items-center justify-between p-4 hover:bg-muted/50 transition-colors">
-                    <div className="flex items-center gap-4">
-                      <button onClick={() => handleComplete(task.id, task.status)}>
+                    <div className="flex items-center gap-4 flex-1 min-w-0">
+                      <button onClick={() => handleComplete(task.id, task.status)} className="flex-shrink-0">
                         {task.status === "completed" ? (
                           <CheckCircle2 className="h-6 w-6 text-green-500" />
                         ) : (
                           <Circle className="h-6 w-6 text-muted-foreground hover:text-primary transition-colors" />
                         )}
                       </button>
-                      <div>
-                        <p className={`font-medium ${task.status === "completed" ? 'line-through text-muted-foreground' : ''}`}>{task.title}</p>
-                        <div className="flex items-center gap-3 mt-1">
+                      <div className="flex-1 min-w-0">
+                        <p className={`font-medium truncate ${task.status === "completed" ? 'line-through text-muted-foreground' : ''}`}>{task.title}</p>
+                        <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-1">
                           {task.dueDate && (
                             <span className="text-xs text-muted-foreground flex items-center gap-1">
                               <CalendarIcon className="h-3 w-3" /> 
@@ -160,7 +160,7 @@ export default function Tasks() {
                       </div>
                     </div>
                     
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0 ml-2">
                       <span className={`hidden sm:inline-block px-2 py-1 text-xs rounded-full ${task.status === 'completed' ? 'bg-green-100 text-green-700' : 'bg-amber-100 text-amber-700'}`}>
                         {task.status}
                       </span>
