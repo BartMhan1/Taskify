@@ -216,7 +216,7 @@ router.get("/tasks/completed", async (req: AuthRequest, res): Promise<void> => {
 
 router.get("/tasks/:id", async (req: AuthRequest, res): Promise<void> => {
   try {
-    const id = parseInt(req.params.id);
+    const id = parseInt(req.params.id as string);
     const [task] = await db.select().from(tasksTable).where(and(eq(tasksTable.id, id), eq(tasksTable.userId, req.userId!))).limit(1);
     if (!task) {
       res.status(404).json({ success: false, message: "Task not found" });
@@ -231,7 +231,7 @@ router.get("/tasks/:id", async (req: AuthRequest, res): Promise<void> => {
 
 router.put("/tasks/:id", async (req: AuthRequest, res): Promise<void> => {
   try {
-    const id = parseInt(req.params.id);
+    const id = parseInt(req.params.id as string);
     const { title, description, dueDate, priority, status, category } = req.body;
     const updates: Partial<typeof tasksTable.$inferInsert> = {};
     if (title !== undefined) updates.title = title;
@@ -259,7 +259,7 @@ router.put("/tasks/:id", async (req: AuthRequest, res): Promise<void> => {
 
 router.delete("/tasks/:id", async (req: AuthRequest, res): Promise<void> => {
   try {
-    const id = parseInt(req.params.id);
+    const id = parseInt(req.params.id as string);
     await db.delete(tasksTable).where(and(eq(tasksTable.id, id), eq(tasksTable.userId, req.userId!)));
     res.json({ success: true, message: "Task deleted" });
   } catch (err) {
@@ -270,7 +270,7 @@ router.delete("/tasks/:id", async (req: AuthRequest, res): Promise<void> => {
 
 router.patch("/tasks/:id/complete", async (req: AuthRequest, res): Promise<void> => {
   try {
-    const id = parseInt(req.params.id);
+    const id = parseInt(req.params.id as string);
     const [task] = await db.update(tasksTable)
       .set({ status: "completed", completedAt: new Date() })
       .where(and(eq(tasksTable.id, id), eq(tasksTable.userId, req.userId!)))
