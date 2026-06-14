@@ -2,11 +2,12 @@
   command = "pnpm install && pnpm run build"
   publish = "artifacts/taskify/dist/public"
 
-# Proxy requests to the API server (Replace with your hosted backend URL once deployed)
-# [[redirects]]
-#   from = "/api/*"
-#   to = "https://your-backend-app.onrender.com/api/:splat"
-#   status = 200
+# Proxy requests to the API server
+[[redirects]]
+  from = "/api/*"
+  to = "https://taskify-yk6d.onrender.com/api/:splat"
+  status = 200
+  force = true
 
 # Fallback for Single Page Application routing (React Router / wouter)
 [[redirects]]
