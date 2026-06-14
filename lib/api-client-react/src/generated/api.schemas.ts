@@ -92,6 +92,8 @@ export interface Task {
   description?: string | null;
   /** @nullable */
   dueDate?: string | null;
+  /** @nullable */
+  dueTime?: string | null;
   priority: TaskPriority;
   status: TaskStatus;
   /** @nullable */
@@ -124,6 +126,7 @@ export interface TaskInput {
   title: string;
   description?: string;
   dueDate?: string;
+  dueTime?: string;
   priority: TaskInputPriority;
   status: TaskInputStatus;
   category?: string;
@@ -151,6 +154,7 @@ export interface TaskUpdate {
   title?: string;
   description?: string;
   dueDate?: string;
+  dueTime?: string;
   priority?: TaskUpdatePriority;
   status?: TaskUpdateStatus;
   category?: string;

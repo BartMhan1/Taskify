@@ -27,9 +27,12 @@ const taskSchema = z.object({
   status: z.enum(["pending", "completed"]),
 });
 
+import { useEffect } from "react";
+
 export default function Tasks() {
   const [filter, setFilter] = useState<"all" | "pending" | "completed">("all");
   const [search, setSearch] = useState("");
+  const [notifiedTasks, setNotifiedTasks] = useState<Set<number>>(new Set());
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -38,6 +41,33 @@ export default function Tasks() {
   });
 
   const tasks = data?.tasks || [];
+
+  useEffect(() => {
+    if ('Notification' in window) {
+      Notification.requestPermission();
+    }
+  }, []);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (Notification.permission !== 'granted') return;
+      const now = new Date().getTime();
+      
+      tasks.forEach((task: any) => {
+        if (task.status !== 'completed' && task.dueTime && !notifiedTasks.has(task.id)) {
+          const due = new Date(task.dueTime).getTime();
+          if (now >= due && now - due <= 60000) {
+            new Notification('Task Reminder: ' + task.title, {
+              body: task.description || 'It is time to do this task!',
+              icon: '/vite.svg'
+            });
+            setNotifiedTasks(prev => new Set(prev).add(task.id));
+          }
+        }
+      });
+    }, 10000);
+    return () => clearInterval(interval);
+  }, [tasks, notifiedTasks]);
 
   const completeTaskMutation = useCompleteTask();
   const deleteTaskMutation = useDeleteTask();
@@ -54,12 +84,18 @@ export default function Tasks() {
     },
   });
 
+  const [dueTimeStr, setDueTimeStr] = useState("");
+
   const onSubmit = async (values: z.infer<typeof taskSchema>) => {
     try {
-      await createTaskMutation.mutateAsync({ data: values as any });
+      const taskData: any = { ...values };
+      if (dueTimeStr) taskData.dueTime = new Date(dueTimeStr).toISOString();
+      
+      await createTaskMutation.mutateAsync({ data: taskData as any });
       queryClient.invalidateQueries({ queryKey: getGetTasksQueryKey() });
       toast({ title: "Task created successfully" });
       form.reset();
+      setDueTimeStr("");
     } catch (error) {
       toast({ variant: "destructive", title: "Failed to create task" });
     }
@@ -226,6 +262,12 @@ export default function Tasks() {
                       </FormItem>
                     )}
                   />
+                  <FormItem>
+                    <FormLabel>Due Time (Reminder)</FormLabel>
+                    <FormControl>
+                      <Input type="datetime-local" value={dueTimeStr} onChange={e => setDueTimeStr(e.target.value)} />
+                    </FormControl>
+                  </FormItem>
                   <FormField
                     control={form.control}
                     name="priority"

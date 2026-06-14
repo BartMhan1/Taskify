@@ -14,6 +14,7 @@ function serializeTask(task: typeof tasksTable.$inferSelect) {
     title: task.title,
     description: task.description,
     dueDate: task.dueDate,
+    dueTime: task.dueTime ? task.dueTime.toISOString() : null,
     priority: task.priority,
     status: task.status,
     category: task.category,
@@ -65,7 +66,7 @@ router.get("/tasks", async (req: AuthRequest, res): Promise<void> => {
 
 router.post("/tasks", async (req: AuthRequest, res): Promise<void> => {
   try {
-    const { title, description, dueDate, priority, status, category } = req.body;
+    const { title, description, dueDate, dueTime, priority, status, category } = req.body;
     if (!title || !priority || !status) {
       res.status(400).json({ success: false, message: "Title, priority and status are required" });
       return;
@@ -75,6 +76,7 @@ router.post("/tasks", async (req: AuthRequest, res): Promise<void> => {
       title,
       description: description || null,
       dueDate: dueDate || null,
+      dueTime: dueTime ? new Date(dueTime) : null,
       priority,
       status,
       category: category || null,
@@ -232,11 +234,12 @@ router.get("/tasks/:id", async (req: AuthRequest, res): Promise<void> => {
 router.put("/tasks/:id", async (req: AuthRequest, res): Promise<void> => {
   try {
     const id = parseInt(req.params.id as string);
-    const { title, description, dueDate, priority, status, category } = req.body;
+    const { title, description, dueDate, dueTime, priority, status, category } = req.body;
     const updates: Partial<typeof tasksTable.$inferInsert> = {};
     if (title !== undefined) updates.title = title;
     if (description !== undefined) updates.description = description;
     if (dueDate !== undefined) updates.dueDate = dueDate || null;
+    if (dueTime !== undefined) updates.dueTime = dueTime ? new Date(dueTime) : null;
     if (priority !== undefined) updates.priority = priority;
     if (status !== undefined) {
       updates.status = status;

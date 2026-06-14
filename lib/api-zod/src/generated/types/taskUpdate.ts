@@ -13,6 +13,7 @@ export interface TaskUpdate {
   title?: string;
   description?: string;
   dueDate?: string;
+  dueTime?: string;
   priority?: TaskUpdatePriority;
   status?: TaskUpdateStatus;
   category?: string;

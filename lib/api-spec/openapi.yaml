@@ -483,6 +483,8 @@ components:
           type: ["string", "null"]
         dueDate:
           type: ["string", "null"]
+        dueTime:
+          type: ["string", "null"]
         priority:
           type: string
           enum: [low, medium, high]
@@ -509,6 +511,8 @@ components:
           type: string
         dueDate:
           type: string
+        dueTime:
+          type: string
         priority:
           type: string
           enum: [low, medium, high]
@@ -528,6 +532,8 @@ components:
         description:
           type: string
         dueDate:
+          type: string
+        dueTime:
           type: string
         priority:
           type: string

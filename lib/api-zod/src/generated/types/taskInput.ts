@@ -13,6 +13,7 @@ export interface TaskInput {
   title: string;
   description?: string;
   dueDate?: string;
+  dueTime?: string;
   priority: TaskInputPriority;
   status: TaskInputStatus;
   category?: string;

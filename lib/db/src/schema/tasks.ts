@@ -9,6 +9,7 @@ export const tasksTable = pgTable("tasks", {
   title: text("title").notNull(),
   description: text("description"),
   dueDate: date("due_date", { mode: "string" }),
+  dueTime: timestamp("due_time", { mode: "string", withTimezone: true }),
   priority: text("priority").notNull().default("medium"),
   status: text("status").notNull().default("pending"),
   category: text("category"),
