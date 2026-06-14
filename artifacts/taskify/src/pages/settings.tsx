@@ -115,15 +115,15 @@ function ProfileTab({ user }: { user: ReturnType<typeof useAuth>["user"] }) {
           </button>
         </div>
         <div>
-          <p className="font-semibold text-gray-900 text-lg">{user?.name || "Aarav Sharma"}</p>
-          <p className="text-sm text-gray-500">{user?.jobTitle || "Product Designer"}</p>
+          <p className="font-semibold text-gray-900 text-lg">{user?.name}</p>
+          {user?.jobTitle && <p className="text-sm text-gray-500">{user.jobTitle}</p>}
           <div className="flex items-center gap-1.5 mt-1.5">
             <Mail className="h-3.5 w-3.5 text-gray-400" />
-            <span className="text-sm text-gray-600">{user?.email || "aarav.sharma@example.com"}</span>
+            <span className="text-sm text-gray-600">{user?.email}</span>
           </div>
           <div className="flex items-center gap-1.5 mt-1">
             <Calendar className="h-3.5 w-3.5 text-gray-400" />
-            <span className="text-sm text-gray-600">Joined on Jan 12, 2024</span>
+            <span className="text-sm text-gray-600">Joined on {user?.createdAt ? new Date(user.createdAt).toLocaleDateString() : ""}</span>
           </div>
         </div>
       </div>
@@ -132,19 +132,19 @@ function ProfileTab({ user }: { user: ReturnType<typeof useAuth>["user"] }) {
         <div className="grid grid-cols-2 gap-x-6 gap-y-4">
           <div className="space-y-1.5">
             <Label className="text-sm font-medium text-gray-700">Full Name</Label>
-            <Input defaultValue={user?.name || "Aarav Sharma"} className="h-10" />
+            <Input defaultValue={user?.name || ""} placeholder="Your Name" className="h-10" />
           </div>
           <div className="space-y-1.5">
             <Label className="text-sm font-medium text-gray-700">Email Address</Label>
-            <Input defaultValue={user?.email || "aarav.sharma@example.com"} className="h-10" />
+            <Input defaultValue={user?.email || ""} placeholder="Email Address" className="h-10" />
           </div>
           <div className="space-y-1.5">
             <Label className="text-sm font-medium text-gray-700">Job Title</Label>
-            <Input defaultValue={user?.jobTitle || "Product Designer"} className="h-10" />
+            <Input defaultValue={user?.jobTitle || ""} placeholder="Job Title" className="h-10" />
           </div>
           <div className="space-y-1.5">
             <Label className="text-sm font-medium text-gray-700">Timezone</Label>
-            <Select defaultValue="asia-kolkata">
+            <Select defaultValue={user?.timezone || "utc"}>
               <SelectTrigger className="h-10"><SelectValue /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="asia-kolkata">(GMT+05:30) Asia/Kolkata</SelectItem>
@@ -155,11 +155,11 @@ function ProfileTab({ user }: { user: ReturnType<typeof useAuth>["user"] }) {
           </div>
           <div className="space-y-1.5">
             <Label className="text-sm font-medium text-gray-700">Phone Number</Label>
-            <Input defaultValue="+91 98765 43210" className="h-10" />
+            <Input defaultValue={user?.phone || ""} placeholder="Phone Number" className="h-10" />
           </div>
           <div className="space-y-1.5">
             <Label className="text-sm font-medium text-gray-700">Language</Label>
-            <Select defaultValue="en">
+            <Select defaultValue={user?.language || "en"}>
               <SelectTrigger className="h-10"><SelectValue /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="en">English</SelectItem>
@@ -174,7 +174,8 @@ function ProfileTab({ user }: { user: ReturnType<typeof useAuth>["user"] }) {
         <div className="mt-4 space-y-1.5">
           <Label className="text-sm font-medium text-gray-700">Bio</Label>
           <Textarea
-            defaultValue="Passionate about creating simple and intuitive experiences. Always trying to learn and build better products."
+            defaultValue={user?.bio || ""}
+            placeholder="Tell us about yourself..."
             className="resize-none h-24"
           />
         </div>
@@ -200,7 +201,7 @@ function AccountTab({ user }: { user: ReturnType<typeof useAuth>["user"] }) {
             <div className="space-y-1.5">
               <Label className="text-sm font-medium text-gray-700">Email Address</Label>
               <div className="relative">
-                <Input defaultValue={user?.email || "aarav.sharma@example.com"} className="h-10 pr-10" readOnly />
+                <Input defaultValue={user?.email || ""} className="h-10 pr-10" readOnly />
                 <Mail className="h-4 w-4 text-gray-400 absolute right-3 top-3" />
               </div>
             </div>
@@ -208,7 +209,7 @@ function AccountTab({ user }: { user: ReturnType<typeof useAuth>["user"] }) {
               <Label className="text-sm font-medium text-gray-700">Password</Label>
               <div className="flex gap-2">
                 <div className="relative flex-1">
-                  <Input type="password" defaultValue="password123" className="h-10 pr-10" readOnly />
+                  <Input type="password" defaultValue="********" className="h-10 pr-10" readOnly />
                   <Lock className="h-4 w-4 text-gray-400 absolute right-3 top-3" />
                 </div>
                 <Button variant="outline" className="h-10 px-4 text-sm flex-shrink-0">Change Password</Button>
@@ -234,7 +235,7 @@ function AccountTab({ user }: { user: ReturnType<typeof useAuth>["user"] }) {
               <p className="text-sm text-gray-500">Member Since</p>
               <div className="flex items-center gap-1.5 mt-1">
                 <Calendar className="h-4 w-4 text-gray-400" />
-                <span className="text-sm font-medium text-gray-900">Jan 12, 2024</span>
+                <span className="text-sm font-medium text-gray-900">{user?.createdAt ? new Date(user.createdAt).toLocaleDateString() : ""}</span>
               </div>
             </div>
             <div>
