@@ -8,9 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Button } from "@/components/ui/button";
 
 export default function Completed() {
-  const { data, isLoading } = useGetCompletedTasks({
-    query: { queryKey: getGetCompletedTasksQueryKey() }
-  });
+  const { data, isLoading } = useGetCompletedTasks();
 
   const stats = data?.stats;
   const tasks = data?.tasks || [];

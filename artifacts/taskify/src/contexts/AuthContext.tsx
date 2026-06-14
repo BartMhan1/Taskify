@@ -1,7 +1,7 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { useLocation } from "wouter";
 import { User, LoginInput, RegisterInput, AuthResponse } from "@workspace/api-zod";
-import { login as apiLogin, register as apiRegister, logout as apiLogout, useGetMe } from "@workspace/api-client-react";
+import { login as apiLogin, register as apiRegister, logout as apiLogout, useGetMe, getGetMeQueryKey } from "@workspace/api-client-react";
 
 interface AuthContextType {
   user: User | null;
@@ -22,6 +22,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const { data: user, isLoading: isUserLoading, error } = useGetMe({
     query: {
+      queryKey: getGetMeQueryKey(),
       enabled: !!token,
       retry: false,
     }

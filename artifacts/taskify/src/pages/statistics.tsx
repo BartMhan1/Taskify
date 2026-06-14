@@ -11,9 +11,7 @@ import {
 import { ArrowUpRight, ArrowDownRight, Lightbulb } from "lucide-react";
 
 export default function Statistics() {
-  const { data, isLoading } = useGetStatistics({
-    query: { queryKey: getGetStatisticsQueryKey() }
-  });
+  const { data, isLoading } = useGetStatistics();
 
   const stats = data?.stats;
   const dailyData = data?.dailyData || [];

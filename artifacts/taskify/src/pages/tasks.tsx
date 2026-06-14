@@ -33,8 +33,8 @@ export default function Tasks() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
-  const { data, isLoading } = useGetTasks({
-    query: { queryKey: getGetTasksQueryKey({ status: filter !== "all" ? filter : undefined }) }
+  const { data, isLoading } = useGetTasks({ 
+    status: filter !== "all" ? (filter as any) : undefined 
   });
 
   const tasks = data?.tasks || [];
@@ -69,7 +69,7 @@ export default function Tasks() {
     if (currentStatus === "completed") return; 
     
     try {
-      await completeTaskMutation.mutateAsync({ id, data: {} });
+      await completeTaskMutation.mutateAsync({ id });
       queryClient.invalidateQueries({ queryKey: getGetTasksQueryKey() });
       toast({ title: "Task completed!" });
     } catch (e) {
