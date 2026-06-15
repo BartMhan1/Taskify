@@ -25,10 +25,8 @@ const loginSchema = z.object({
 function TaskifyLogo() {
   return (
     <div className="flex items-center gap-2">
-      <div className="flex h-8 w-8 items-center justify-center rounded-md bg-primary">
-        <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
-          <path d="M3 9L7 13L15 5" stroke="black" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
-        </svg>
+      <div className="flex h-8 w-8 items-center justify-center rounded-md bg-transparent">
+        <img src="/logo.png" alt="Taskify Logo" className="h-full w-full object-contain" />
       </div>
       <span className="text-xl font-bold tracking-tight">Taskify</span>
     </div>
