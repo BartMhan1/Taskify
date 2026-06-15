@@ -89,12 +89,7 @@ export default function Tasks() {
   const onSubmit = async (values: z.infer<typeof taskSchema>) => {
     try {
       const taskData: any = { ...values };
-      if (dueTimeStr) {
-        const [hours, minutes] = dueTimeStr.split(':');
-        const d = new Date();
-        d.setHours(parseInt(hours, 10), parseInt(minutes, 10), 0, 0);
-        taskData.dueTime = d.toISOString();
-      }
+      if (dueTimeStr) taskData.dueTime = new Date(dueTimeStr).toISOString();
       
       await createTaskMutation.mutateAsync({ data: taskData as any });
       queryClient.invalidateQueries({ queryKey: getGetTasksQueryKey() });
@@ -267,12 +262,10 @@ export default function Tasks() {
                       </FormItem>
                     )}
                   />
-                  <FormItem>
-                    <FormLabel>Due Time (Reminder)</FormLabel>
-                    <FormControl>
-                      <Input type="datetime-local" value={dueTimeStr} onChange={e => setDueTimeStr(e.target.value)} />
-                    </FormControl>
-                  </FormItem>
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">Due Time (Reminder)</label>
+                    <Input type="datetime-local" value={dueTimeStr} onChange={e => setDueTimeStr(e.target.value)} />
+                  </div>
                   <FormField
                     control={form.control}
                     name="priority"
