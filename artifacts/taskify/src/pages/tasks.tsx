@@ -89,7 +89,12 @@ export default function Tasks() {
   const onSubmit = async (values: z.infer<typeof taskSchema>) => {
     try {
       const taskData: any = { ...values };
-      if (dueTimeStr) taskData.dueTime = new Date(dueTimeStr).toISOString();
+      if (dueTimeStr) {
+        const [hours, minutes] = dueTimeStr.split(':');
+        const d = new Date();
+        d.setHours(parseInt(hours, 10), parseInt(minutes, 10), 0, 0);
+        taskData.dueTime = d.toISOString();
+      }
       
       await createTaskMutation.mutateAsync({ data: taskData as any });
       queryClient.invalidateQueries({ queryKey: getGetTasksQueryKey() });

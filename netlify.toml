@@ -5,7 +5,7 @@
 # Proxy requests to the API server
 [[redirects]]
   from = "/api/*"
-  to = "https://taskify-yk6d.onrender.com/api/:splat"
+  to = "https://taskify-go9c.onrender.com/api/:splat"
   status = 200
   force = true
 
