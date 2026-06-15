@@ -14,7 +14,7 @@ function serializeTask(task: typeof tasksTable.$inferSelect) {
     title: task.title,
     description: task.description,
     dueDate: task.dueDate,
-    dueTime: task.dueTime ? task.dueTime.toISOString() : null,
+    dueTime: task.dueTime,
     priority: task.priority,
     status: task.status,
     category: task.category,
@@ -76,7 +76,7 @@ router.post("/tasks", async (req: AuthRequest, res): Promise<void> => {
       title,
       description: description || null,
       dueDate: dueDate || null,
-      dueTime: dueTime ? new Date(dueTime) : null,
+      dueTime: dueTime ? String(dueTime) : null,
       priority,
       status,
       category: category || null,
@@ -239,7 +239,7 @@ router.put("/tasks/:id", async (req: AuthRequest, res): Promise<void> => {
     if (title !== undefined) updates.title = title;
     if (description !== undefined) updates.description = description;
     if (dueDate !== undefined) updates.dueDate = dueDate || null;
-    if (dueTime !== undefined) updates.dueTime = dueTime ? new Date(dueTime) : null;
+    if (dueTime !== undefined) updates.dueTime = dueTime ? String(dueTime) : null;
     if (priority !== undefined) updates.priority = priority;
     if (status !== undefined) {
       updates.status = status;
